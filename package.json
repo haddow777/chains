@@ -1,0 +1,9 @@
+{
+  "name": "chains",
+  "version": "0.0.1",
+  "dependencies": {
+    "expresso":"*",
+    "deferred":"*",
+    "underscore":"*"
+  }
+}
