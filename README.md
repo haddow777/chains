@@ -108,7 +108,7 @@ What if you have a function that does something that takes a while and so return
 		console.log('This won't fire until lengthyFunction() resolves');
 	});
 
-Okay, this is good and all, but how can I get values to pass from one function i the chain to otehr values in the chain that just the next one? Simple, you can attach an object with almost any value you like with addValues like so:
+Okay, this is good and all, but how can I get values to pass from one function i the chain to other values in the chain that just the next one? Simple, you can attach an object with almost any value you like with addValues like so:
 
 	var obj = {
 		value1: true,
@@ -122,6 +122,43 @@ Then from that point on you can access these values like this:
 
 	chain1.func( function(wins, vals) {
 		console.log('Big = ' + vals.value3.big);
+	});
+
+This is good and all for normal execution functions and deferral functions that already return promises, but
+what about a deferral function that returns through a callback function. Of course, one method is to use
+the Deferred's inbuilt promisify functionality to promisify the library. If for some reason, you can't do that
+though, the chains library also provides a method for handling this situation. It is pretty young and might 
+change in the future, but for the moment here is the pattern you can follow:
+
+	chain1.addValues({value1: value1, value2: value2});
+
+	chain1.promisify(function(handler, vals) {
+		functionThatDefers(vals.value1, vals.value2, handler);
+	});
+
+Simple huh? Well sort of, this is actually the first step. You might have a question or two, such as, where
+does the handler come from and where to the values returned by the function go? I thought I would quickly
+explain that before moving onto the second step. First, handler is a function passed through the anonymous
+function by the chains object itself. The nice thing about this is that the chains object doesn't try to
+guess where your callback function is placed, you specifically put it in the right position. The values 
+returned to the handler callback are then stored in the vals object in the form of the arguments array. Lets
+for the examples sake say that he callback returned the values error and value. You can handle it this way:
+
+	chain1.func(function(wins, vals) {
+		var error = vals.arguments[0],
+			value = vals.arguments[1];
+	});
+
+As a convenience method, you can also do this:
+
+	chain1.addValues({value1: value1, value2: value2});
+
+	chain1.promisify(function(handler, vals) {
+		functionThatDefers(vals.value1, vals.value2, handler);
+	}, 
+	function(wins, vals) {
+		var error = vals.arguments[0],
+			value = vals.arguments[1];
 	});
 
 Pretty cool huh? Okay, but what if you have a large number of repetitive function calls to make that would normally be handled in a loop. This won't work:
