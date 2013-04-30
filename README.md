@@ -87,9 +87,9 @@ It should also be noted, at least at this point in the libraries development, du
 	function(fail) {
 		//fail is whatever is passed to the reject() function of the previous
 		//promise
-	}
+	});
 	
-	Well, this is good and all, but what if you have functions that return values that you want passed on to the next function? Well as just 	mentioned, you can do this:
+Well, this is good and all, but what if you have functions that return values that you want passed on to the next function? Well as just 	mentioned, you can do this:
 	
 	chain1.func(function() { return true });
 	chain1.func(function(wins) { 
